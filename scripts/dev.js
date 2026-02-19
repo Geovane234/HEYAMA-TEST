@@ -50,13 +50,16 @@ const turbo = spawn('npx', ['turbo', 'dev', '--filter=!mobile'], {
 });
 
 console.log(`Forcing Expo to use LAN IP: ${localIp}\n`);
-const expo = spawn('npx', ['expo', 'start', '--lan'], {
+// Standard offline start - no conflicting flags
+const expo = spawn('npx', ['expo', 'start'], {
     stdio: 'inherit',
     shell: true,
     cwd: mobilePath,
     env: {
         ...process.env,
         EXPO_OFFLINE: '1',
+        EXPO_USE_METRO_WORKSPACE_ROOT: '1',
+        EXPO_SKIP_DEPENDENCY_VALIDATION: '1',
         REACT_NATIVE_PACKAGER_HOSTNAME: localIp
     }
 });
