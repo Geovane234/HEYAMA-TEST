@@ -1,16 +1,12 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 const getBaseUrl = () => {
     // If we're on a physical device, we MUST use the LAN IP of the computer
-    // expo-constants provides this via debuggerHost
     const debuggerHost = Constants.expoConfig?.hostUri;
     const localhost = debuggerHost ? debuggerHost.split(':')[0] : 'localhost';
 
-    // Log the detected host for debugging
     console.log(`[API] Detected Host: ${localhost}`);
-
     return `http://${localhost}:3000`;
 };
 
@@ -39,9 +35,17 @@ export const getSocketUrl = () => BASE_URL;
 
 export const formatImageUrl = (url: string) => {
     if (!url) return '';
-    if (url.startsWith('http')) return url;
     
-    // Ensure we don't have double slashes
+    // If it's already an absolute URL (legacy or external), return it
+    if (url.startsWith('http')) {
+        // Handle potential localhost leakage from creator's side
+        if (url.includes('localhost') && BASE_URL.includes('192.168')) {
+            return url.replace('http://localhost:3000', BASE_URL);
+        }
+        return url;
+    }
+    
+    // Prepend BASE_URL to relative paths
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
     return `${BASE_URL}${cleanUrl}`;
 };

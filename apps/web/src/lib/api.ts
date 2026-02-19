@@ -23,6 +23,7 @@ export const objectsApi = {
         await api.delete(`/objects/${id}`);
     },
 };
+
 export const formatImageUrl = (url: string) => {
     if (!url) return '';
     if (url.startsWith('http')) return url;
